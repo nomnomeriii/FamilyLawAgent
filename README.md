@@ -25,7 +25,7 @@ The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular P
 ## Prerequisites
 
 - OpenAI API key.
-- CourtListener token (recommended for research retrieval quality).
+- CourtListener token.
 
 ## Setup (Recommended: Virtual Environment)
 
