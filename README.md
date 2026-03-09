@@ -7,7 +7,7 @@ This project builds a New York family-law assistant with two RAG paths:
 
 The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular Python code in `family_law_agent/`.
 
-## Team Member
+## Team: Civil Litigation Lawyer 1
 - Chih-Hsin Chen (cc5240)
 - Leah Li (ql2481)
 - Yanhao Bai (yb2630)
