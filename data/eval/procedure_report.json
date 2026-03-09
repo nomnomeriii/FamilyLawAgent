@@ -1,0 +1,14 @@
+{
+  "totals": {
+    "gold_rows": 25,
+    "pred_rows": 25,
+    "scored_rows": 25,
+    "missing_predictions": 0
+  },
+  "metrics": {
+    "workflow_accuracy": 0.68,
+    "checklist_completeness": 0.0,
+    "critical_miss_rate": 1.0
+  },
+  "missing_prediction_ids": []
+}
