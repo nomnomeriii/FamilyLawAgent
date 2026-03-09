@@ -7,6 +7,11 @@ This project builds a New York family-law assistant with two RAG paths:
 
 The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular Python code in `family_law_agent/`.
 
+## Team Member
+- Chih-Hsin Chen
+- Leah Li
+- Yanhao Bai
+
 ## Repository Layout
 
 - `app_streamlit.py`: main Streamlit app.
@@ -16,8 +21,6 @@ The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular P
 - `scripts/build_procedure_db.py`: CLI to build the Chroma DB from local forms.
 - `requirements_streamlit.txt`: dependencies for local app run.
 - `NY Family Law Forms/`: source documents for Procedure Engine.
-- `6895_withAPI_Cell3_Modified.ipynb`: original Colab notebook (kept unchanged).
-- `6895_withapi_cell3_modified.py`: notebook-converted script (kept unchanged).
 
 ## Prerequisites
 
