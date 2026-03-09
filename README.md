@@ -161,27 +161,4 @@ For a single Procedure case (example `WF-001`), remove `WF-001` from `data/eval/
 python scripts/generate_eval_predictions.py --resume --max-cases 1 --skip-research
 ```
 
-Detailed protocol: `docs/EVAL_PROTOCOL.md`
 
-## Troubleshooting
-
-- `zsh: command not found: pip`
-  - Use `python -m pip ...` after activating `.venv`.
-- `source: no such file or directory: .venv/bin/activate`
-  - The venv was not created; run `/usr/bin/python3 -m venv .venv` first.
-- `zsh: command not found: python`
-  - Before venv activation, use `/usr/bin/python3`.
-- `Agreeing to the Xcode and Apple SDKs license requires admin privileges`
-  - Run `sudo xcodebuild -license accept` once, then retry setup.
-- Research engine says `Stage 1 search failed`
-  - Open `Research Retrieval Errors (Debug)` in the app and inspect the exact API errors.
-  - Run `python scripts/check_courtlistener.py --token "<YOUR_TOKEN>"` to isolate token/network issues.
-
-## Legal and Safety Notice
-
-This project provides general legal information only and is not legal advice. Outputs may be incomplete or incorrect for specific facts. Users should consult a licensed attorney or legal aid provider for case-specific guidance.
-
-## Notes for Class Submission
-
-- The original notebook and converted script are preserved unchanged.
-- The local app path is designed for reproducible runs outside Colab.
