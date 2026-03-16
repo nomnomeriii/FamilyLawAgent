@@ -32,6 +32,8 @@ FamilyLawAgent/
 │   ├── generate_eval_predictions.py   // Generates procedure and research prediction files for evaluation.
 │   ├── eval_procedure.py              // Scores workflow predictions against the procedure gold benchmark.
 │   └── eval_research.py               // Scores case retrieval, citations, and factor coverage.
+│   ├── eval_dataset.py                // 18 NY Bar Exam–style QA pairs used by the final-response evaluator.
+│   └── eval_final_response.py         // Scores final agent responses.
 ├── data/eval/                         // Evaluation datasets plus generated predictions and reports.
 │   ├── procedure_workflow_test.jsonl  // Gold dataset for filing-workflow evaluation.
 │   ├── case_retrieval_test.jsonl      // Gold dataset for research retrieval evaluation.
