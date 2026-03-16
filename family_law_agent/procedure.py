@@ -11,6 +11,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from family_law_agent.procedure_schema import build_structured_procedure_schema, detect_procedure_case_type
+
 
 PROCEDURE_PROMPT_TEMPLATE = """
 You are a New York family-law procedure assistant.
@@ -250,10 +252,18 @@ def run_procedure_engine(query: str, llm: Any, vectorstore: Optional[Chroma], k:
     except Exception as exc:
         return {"ok": False, "error": f"Procedure engine failed: {exc}"}
 
+    structured_schema = build_structured_procedure_schema(
+        query=query,
+        response_text=answer,
+        case_type=detect_procedure_case_type(query),
+        retrieved_docs=retrieved_docs,
+    )
+
     return {
         "ok": True,
         "refined_prompt": PROCEDURE_PROMPT_TEMPLATE,
         "retrieved_docs": retrieved_docs,
         "retrieved_context_for_prompt": context,
         "final_response": answer,
+        "structured_schema": structured_schema,
     }

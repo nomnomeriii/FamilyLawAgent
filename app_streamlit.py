@@ -462,6 +462,8 @@ def main() -> None:
                     st.markdown("---")
             with st.expander("LLM Prompt Context Sent (Procedure)"):
                 st.text(procedure_meta.get("retrieved_context_for_prompt", ""))
+            with st.expander("Structured Schema (Procedure)"):
+                st.json(procedure_meta.get("structured_schema", {}))
 
         with col2:
             st.markdown("**Research Engine Debug**")

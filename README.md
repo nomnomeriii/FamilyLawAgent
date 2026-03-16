@@ -14,8 +14,6 @@ The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular P
 
 ## Repository Layout
 
-`docs/` is intentionally omitted from the layout below.
-
 ```text
 FamilyLawAgent/
 ├── app_streamlit.py                   // Streamlit entry point and multi-tab app UI.
