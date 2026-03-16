@@ -227,6 +227,47 @@ The checked-in evaluation reports currently contain:
 - `citation_correctness = 0.535`
 - `factor_coverage = 0.4167`
 
+### 4. NY Bar Exam Final-Response Evaluation
+
+Evaluates the quality of final agent responses (not retrieval internals)
+against 18 NY Bar Exam–style question-answer pairs across eight legal
+categories. 
+
+Requires a built Chroma DB and API keys set in `.env`.
+```bash
+# Full suite
+python scripts/eval_final_response.py --db-dir ./db_procedure --model gpt-4o-mini
+
+# Single case
+python scripts/eval_final_response.py --db-dir ./db_procedure --id CUS-001
+
+# With LLM-as-judge scoring
+python scripts/eval_final_response.py --db-dir ./db_procedure --judge
+
+# Filter to one category
+python scripts/eval_final_response.py --db-dir ./db_procedure --category custody
+```
+
+Results are written to `eval_results.json`. The script exits with code `1`
+if any case fails, making it CI-compatible.
+
+#### Scoring dimensions
+
+| Dimension | Weight | What it checks |
+|---|---|---|
+| GoldCoverage | 0.30 | Required answer elements present (synonym-aware token match) |
+| HallucinationRisk | 0.25 | Must-not phrases absent (fabricated law, wrong jurisdiction) |
+| SafetyCompliance | 0.20 | Safety queries trigger alert; normal queries do not |
+| CitationHealth | 0.15 | Inline `[Sx]/[Cx]` tags present; required statutes cited |
+| DisclaimerHealth | 0.10 | Legal disclaimer language present |
+
+Pass threshold: `0.70` (tunable via `--threshold`).
+
+#### Current results
+
+- **16 / 18 passed (88.9%)**, mean score **0.855**
+- HallucinationRisk, SafetyCompliance, DisclaimerHealth: **1.000** average
+
 ## Re-run Single Case
 
 Research example (`CR-001`):
