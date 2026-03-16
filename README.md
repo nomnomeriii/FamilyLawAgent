@@ -100,8 +100,8 @@ If the keys are not set in `.env`, you can also enter them in the Streamlit side
 One simple demo flow:
 
 1. Launch the app with `streamlit run app_streamlit.py`.
-2. Select `Support`.
-3. Ask:
+2. Select `Support` as the Case Type.
+3. Type a query in the chat box to ask:
 
 ```text
 I lost my job and need to modify my child support order in New York.
@@ -109,9 +109,11 @@ I lost my job and need to modify my child support order in New York.
 
 Expected outputs:
 
-- `Workflow Checklist`: filing steps, required inputs, service, and attachments
-- `Case Research`: CourtListener-grounded authorities
-- `Draft Outline`: a draft filing structure
+- `Workflow Checklist`: a procedure-oriented filing path grounded in local NY family-law forms
+- `Case Research`: citation-grounded authorities retrieved from CourtListener
+- `Draft Outline`: a draft structure for organizing the issue
+
+Note: exact outputs may vary across runs. Because retrieval and synthesis are dynamic, the returned forms and cases may be approximate rather than perfectly targeted, especially for overlapping family-law issues.
 
 ## Optional Check
 
