@@ -1,16 +1,17 @@
 # NY Family Law Agent (EECS 6895 Midterm)
 
-This project builds a New York family-law assistant with two RAG paths:
+This project is a New York family-law assistant with two retrieval-augmented generation paths:
 
-- Procedure Engine: retrieves NY family court forms/instructions and generates filing workflows with source tags.
-- Research Engine: retrieves NY case law from CourtListener and generates citation-grounded case summaries.
+- `Procedure Engine`: retrieves New York family-court forms and instructions and generates filing workflows with source tags.
+- `Research Engine`: retrieves New York case law from CourtListener and generates citation-grounded case summaries.
 
 The current local app is a Streamlit UI (`app_streamlit.py`) backed by modular Python code in `family_law_agent/`.
 
-## Team: Civil Litigation Lawyer 1
-- Chih-Hsin Chen (cc5240)
-- Leah Li (ql2481)
-- Yanhao Bai (yb2630)
+## Team
+
+- Chih-Hsin Chen (`cc5240`)
+- Leah Li (`ql2481`)
+- Yanhao Bai (`yb2630`)
 
 ## Repository Layout
 
@@ -19,46 +20,42 @@ FamilyLawAgent/
 ├── app_streamlit.py                   // Streamlit entry point and multi-tab app UI.
 ├── requirements_streamlit.txt         // Python dependencies for local development and app runs.
 ├── .env.example                       // Template for required environment variables.
-│
 ├── family_law_agent/                  // Core package for the procedure, research, and safety pipelines.
 │   ├── __init__.py                    // Package marker.
-│   ├── procedure.py                   // Form ingestion, Chroma retrieval, and workflow generation.
-│   ├── research.py                    // CourtListener retrieval, reranking, quote extraction, and synthesis.
+│   ├── procedure.py                   // Form ingestion, Chroma retrieval, workflow generation, and structured procedure output.
+│   ├── procedure_schema.py            // Shared procedure schema extraction used by the app and evaluation pipeline.
+│   ├── research.py                    // CourtListener retrieval, reranking, quote extraction, and research synthesis.
 │   └── safety.py                      // Safety filter for harmful or disallowed requests.
-│
 ├── scripts/                           // CLI utilities for indexing, checks, and evaluation.
 │   ├── build_procedure_db.py          // Builds the local Chroma procedure database from form files.
 │   ├── check_courtlistener.py         // Verifies CourtListener token validity and API connectivity.
-│   ├── generate_eval_predictions.py   // Generates procedure/research predictions for eval datasets.
-│   ├── eval_procedure.py              // Scores workflow predictions against procedure gold data.
+│   ├── generate_eval_predictions.py   // Generates procedure and research prediction files for evaluation.
+│   ├── eval_procedure.py              // Scores workflow predictions against the procedure gold benchmark.
 │   └── eval_research.py               // Scores case retrieval, citations, and factor coverage.
-│
-├── data/
-│   └── eval/                          // Evaluation datasets plus generated predictions and reports.
-│       ├── procedure_workflow_test.jsonl // Gold dataset for filing-workflow evaluation.
-│       ├── case_retrieval_test.jsonl     // Gold dataset for research retrieval evaluation.
-│       ├── ny_bar_benchmark.jsonl        // Optional benchmark scaffold.
-│       ├── procedure_predictions.jsonl   // Generated procedure eval outputs.
-│       ├── research_predictions.jsonl    // Generated research eval outputs.
-│       ├── procedure_report.json         // Saved procedure evaluation metrics.
-│       └── research_report.json          // Saved research evaluation metrics.
-│
-├── NY Family Law Forms/               // Source NY family-court forms and instructions used for ingestion.
-│   └── *.pdf / *.doc                  // Raw form files indexed by the Procedure Engine.
-│
+├── data/eval/                         // Evaluation datasets plus generated predictions and reports.
+│   ├── procedure_workflow_test.jsonl  // Gold dataset for filing-workflow evaluation.
+│   ├── case_retrieval_test.jsonl      // Gold dataset for research retrieval evaluation.
+│   ├── ny_bar_benchmark.jsonl         // Placeholder benchmark file for broader legal QA evaluation.
+│   ├── procedure_predictions.jsonl    // Generated procedure evaluation outputs.
+│   ├── research_predictions.jsonl     // Generated research evaluation outputs.
+│   ├── procedure_report.json          // Saved procedure evaluation metrics.
+│   └── research_report.json           // Saved research evaluation metrics.
+├── NY Family Law Forms/               // Local NY family-court forms and instructions used by the Procedure Engine.
+|
 └── db_procedure/                      // Persisted Chroma vector database built from local forms.
     ├── chroma.sqlite3                 // Metadata store for the vector index.
     └── <collection-id>/               // Binary index files generated by Chroma.
 ```
 
-## Prerequisites
+## Requirements
 
-- OpenAI API key.
-- CourtListener token.
+- Python 3
+- OpenAI API key
+- CourtListener token
 
-## Setup (Recommended: Virtual Environment)
+## Quick Start
 
-Run from project root:
+1. Install dependencies.
 
 ```bash
 python3 -m venv .venv
@@ -67,9 +64,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements_streamlit.txt
 ```
 
-## Configure API Keys (.env)
-
-Create and edit a local `.env` file:
+2. Copy `.env`.
 
 ```bash
 cp .env.example .env
@@ -82,7 +77,7 @@ OPENAI_API_KEY=sk-...
 COURTLISTENER_TOKEN=...
 ```
 
-## Build Procedure Database
+3. Build the procedure DB the first time you run the project.
 
 ```bash
 python scripts/build_procedure_db.py \
@@ -90,71 +85,82 @@ python scripts/build_procedure_db.py \
   --db-dir "./db_procedure"
 ```
 
-## Run the App
+You only need to rebuild the procedure DB when the local forms corpus changes.
+
+4. Run Streamlit.
 
 ```bash
 streamlit run app_streamlit.py
 ```
 
-In the Streamlit sidebar, provide keys only if you did not set them in `.env`:
+If the keys are not set in `.env`, you can also enter them in the Streamlit sidebar.
 
-- OpenAI API Key (required unless set as `OPENAI_API_KEY`).
-- CourtListener Token (recommended unless set as `COURTLISTENER_TOKEN`).
+## Example Usage
 
-## Quick CourtListener Check (Optional)
+One simple demo flow:
 
-Use this if the Research Engine returns no results:
+1. Launch the app with `streamlit run app_streamlit.py`.
+2. Select `Support`.
+3. Ask:
+
+```text
+I lost my job and need to modify my child support order in New York.
+```
+
+Expected outputs:
+
+- `Workflow Checklist`: filing steps, required inputs, service, and attachments
+- `Case Research`: CourtListener-grounded authorities
+- `Draft Outline`: a draft filing structure
+
+## Optional Check
+
+If the Research Engine returns no results, verify CourtListener connectivity:
 
 ```bash
 python scripts/check_courtlistener.py --token "<YOUR_TOKEN>"
 ```
 
-If `COURTLISTENER_TOKEN` is set in `.env`, you can also run:
+If `COURTLISTENER_TOKEN` is already set in `.env`, you can run:
 
 ```bash
 python scripts/check_courtlistener.py
 ```
 
-If status is `401/403`, the token is invalid/expired or malformed.
-If status is `200` with non-zero `result_count`, API connectivity is working.
+If status is `401` or `403`, the token is invalid or expired. If status is `200` with non-zero `result_count`, API connectivity is working.
 
 ## App Behavior
 
-- Enforces NY jurisdiction gate.
-- Runs safety classifier before engine execution.
-- Uses chat-style intake (case type selection -> question).
-- Executes Procedure and Research engines per query.
-- Shows a 3-tab workspace: `Workflow Checklist` / `Case Research` / `Draft Outline`.
-- Supports `Export Filing Packet (.md)` for checklist + research + draft outline.
-- Falls back to general informational guidance if citation quality is weak.
+- Enforces New York jurisdiction only
+- Runs safety filtering before substantive generation
+- Executes both Procedure and Research engines per query
+- Shows three main tabs: `Workflow Checklist`, `Case Research`, `Draft Outline`
+- Supports `Export Filing Packet (.md)`
+- Falls back to general information when citation quality is weak
 
-## Evaluation Datasets and Scripts
+## Evaluation
 
-Dataset scaffolds:
+### Datasets
 
 - `data/eval/procedure_workflow_test.jsonl`
 - `data/eval/case_retrieval_test.jsonl`
-- `data/eval/ny_bar_benchmark.jsonl` (optional placeholder)
+- `data/eval/ny_bar_benchmark.jsonl`
 
-Metric scripts:
+### Scripts
 
+- `scripts/generate_eval_predictions.py`
 - `scripts/eval_procedure.py`
 - `scripts/eval_research.py`
-- `scripts/generate_eval_predictions.py`
 
-### Generate Predictions
+### 1. Live Evaluation
 
-```bash
-python scripts/generate_eval_predictions.py --max-cases 0
-```
-
-Resume mode (generate only missing IDs from existing prediction files):
+Generate fresh prediction files from the live system:
 
 ```bash
-python scripts/generate_eval_predictions.py --resume --max-cases 0
+python3 scripts/generate_eval_predictions.py --max-cases 0
 ```
 
-### Run Evaluation
+Then score them:
 
 ```bash
 python scripts/eval_procedure.py \
@@ -171,7 +177,55 @@ python scripts/eval_research.py \
   --out data/eval/research_report.json
 ```
 
-### Re-run Single Case (Example: `CR-001` only)
+Use this mode to evaluate the current end-to-end system behavior.
+
+### 2. Recompute Reports From Existing Prediction Files
+
+If prediction files already exist and you only want to recompute reports:
+
+```bash
+python scripts/eval_procedure.py \
+  --gold data/eval/procedure_workflow_test.jsonl \
+  --pred data/eval/procedure_predictions.jsonl \
+  --out data/eval/procedure_report.json
+```
+
+```bash
+python scripts/eval_research.py \
+  --gold data/eval/case_retrieval_test.jsonl \
+  --pred data/eval/research_predictions.jsonl \
+  --k 5 \
+  --out data/eval/research_report.json
+```
+
+### 3. Resume Generation
+
+Generate only missing prediction IDs:
+
+```bash
+python3 scripts/generate_eval_predictions.py --resume --max-cases 0
+```
+
+## Current Saved Evaluation Results
+
+The checked-in evaluation reports currently contain:
+
+### Procedure
+
+- `workflow_accuracy = 0.80`
+- `checklist_completeness = 0.9116`
+- `critical_miss_rate = 0.0`
+
+### Research
+
+- `recall@5 = 0.95`
+- `precision@5 = 0.77`
+- `citation_correctness = 0.535`
+- `factor_coverage = 0.4167`
+
+## Re-run Single Case
+
+Research example (`CR-001`):
 
 ```bash
 python - <<'PY'
@@ -187,9 +241,8 @@ PY
 python scripts/generate_eval_predictions.py --resume --max-cases 1 --skip-procedure
 ```
 
-For a single Procedure case (example `WF-001`), remove `WF-001` from `data/eval/procedure_predictions.jsonl`, then run:
+Procedure example (`WF-001`): remove `WF-001` from `data/eval/procedure_predictions.jsonl`, then run:
 
 ```bash
 python scripts/generate_eval_predictions.py --resume --max-cases 1 --skip-research
 ```
-
